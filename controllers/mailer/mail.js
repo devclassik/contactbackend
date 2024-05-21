@@ -10,6 +10,7 @@ const transporter = nodemailer.createTransport({
 });
 
 const sendMailer = asyncHandler(async (req, res) => {
+  // console.log('body', req.body);
   const { name, email, to, subject, message } = req.body;
 
   // Create the email body for the recipient
@@ -47,20 +48,35 @@ const sendMailer = asyncHandler(async (req, res) => {
     html: senderMailBody,
   };
 
-  // Send email to the recipient
-  await transporter.sendMail(recipientMailOptions, (error, info) => {
-    if (error) {
-      return res.status(500).send(error);
-    }
-  });
+  try {
+    // Send email to the recipient
+    await transporter.sendMail(recipientMailOptions);
 
-  // Send email to the sender
-  await transporter.sendMail(senderMailOptions, (error, info) => {
-    if (error) {
-      return res.status(500).send(error);
-    }
-    res.status(200).json({ msg: info }).send("Email sent successfully");
-  });
+    // Send email to the sender
+    await transporter.sendMail(senderMailOptions);
+
+    // Respond with success message
+    res.status(200).json({ message: "Email sent successfully" });
+  } catch (error) {
+    // Handle any errors
+    res.status(500).json({ error: "An error occurred while sending the email" });
+  }
+  
+
+  // // Send email to the recipient
+  // await transporter.sendMail(recipientMailOptions, (error, info) => {
+  //   if (error) {
+  //     return res.status(500).send(error);
+  //   }
+  // });
+
+  // // Send email to the sender
+  // await transporter.sendMail(senderMailOptions, (error, info) => {
+  //   if (error) {
+  //     return res.status(500).send(error);
+  //   }
+  //   res.status(200).json({ msg: info }).send("Email sent successfully");
+  // });
 });
 
 module.exports = { sendMailer };
