@@ -59,7 +59,6 @@ const sendMailer = asyncHandler(async (req, res) => {
     if (error) {
       return res.status(500).send(error);
     }
-
     res.status(200).json({ msg: info }).send("Email sent successfully");
   });
 });
