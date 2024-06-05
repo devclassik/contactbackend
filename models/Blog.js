@@ -2,10 +2,10 @@ const mongoose = require("mongoose");
 
 const blogSchema = mongoose.Schema(
   {
-    img: {
+    img: [{
       type: String,
       default: "",
-    },
+    }],
     title: {
       type: String,
       required: [true, "Please add title"],

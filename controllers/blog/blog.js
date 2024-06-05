@@ -6,6 +6,9 @@ const Blog = require("../../models/Blog");
 
 exports.addBlog = async (req, res) => {
   try {
+    if (req.body.img && !Array.isArray(req.body.img)) {
+      req.body.img = [req.body.img];
+    }
     let dataToSend = await Blog.create(req.body);
     return helper.controllerResult({
       req,
@@ -59,6 +62,7 @@ exports.getBlogByID = async (req, res) => {
     const blogId = req.params.id;
     // Check if the document exists
     const dataToSend = await Blog.findById(blogId);
+    // console.log('res', dataToSend);
     if (!dataToSend) {
       // If no matching document found, return an error message
       const msg = "Oops!, No document found, kindly check the URL";
@@ -136,7 +140,6 @@ exports.searchBlog = async (req, res) => {
   }
 };
 
-
 exports.updateBlog = async (req, res) => {
   const { img, title, description } = req.body;
   try {
@@ -147,19 +150,26 @@ exports.updateBlog = async (req, res) => {
         req,
         res,
         result: msg,
+        statusCode: 404,
       });
     }
 
-    blog.img = img;
-    blog.title = title;
-    blog.description = description;
+    if (img) {
+      blog.img = Array.isArray(img)? img : [img];
+    }
+    if (title) {
+      blog.title = title;
+    }
+    if (description) {
+      blog.description = description;
+    }
 
     const dataToSend = await blog.save();
     return helper.controllerResult({
       req,
       res,
       result: dataToSend,
-      message: "Blog Updated",
+      message: "Blog updated successfully",
     });
   } catch (error) {
     return helper.controllerResult({
