@@ -54,9 +54,7 @@ exports.getAllQuiz = async (req, res) => {
     const totalDocuments = await Quiz.countDocuments();
     const totalPages = Math.ceil(totalDocuments / limit);
     const pipeline = [
-      { $sort: { updatedAt: -1 } },
-      { $skip: skipDocuments },
-      { $limit: limit },
+      { $sample: { size: limit } },
     ];
     let dataToSend = await Quiz.aggregate(pipeline);
     return helper.controllerResult({
