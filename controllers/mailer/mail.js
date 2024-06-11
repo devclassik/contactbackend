@@ -1,5 +1,7 @@
 const asyncHandler = require("express-async-handler");
 const nodemailer = require("nodemailer");
+const helper = require("../../utilities/helpers");
+
 
 const transporter = nodemailer.createTransport({
   service: "Gmail",
@@ -55,11 +57,21 @@ const sendMailer = asyncHandler(async (req, res) => {
     // Send email to the sender
     await transporter.sendMail(senderMailOptions);
 
+    return helper.controllerResult({
+      req,
+      res,
+      message: { message: "Password reset email sent" },
+    });
     // Respond with success message
-    res.status(200).json({ message: "Email sent successfully" });
   } catch (error) {
+    return helper.controllerResult({
+      req,
+      res,
+      statusCode: 500,
+      result:  error,
+      message: error.message,
+    });
     // Handle any errors
-    res.status(500).json({ error: "An error occurred while sending the email" });
   }
   
 
